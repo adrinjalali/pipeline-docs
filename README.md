@@ -33,3 +33,10 @@ Now I'm trying to figure out what _PipelineIO_ exactly is. I can think of the fo
 The [script](https://github.com/fluxcapacitor/pipeline/blob/master/jupyterhub.ml/notebooks/talks/StartupML/Jan-20-2017/SparkMLTensorflowAI-HybridCloud-ContinuousDeployment.ipynb) used in one of the talks, uses no library from _pipeline.io_ which in a sense is promising, meaning data scientist mostly won't have to worry about what they do. That script seems to deal with _pipeline.io_ when it comes to talking to some servers. But unfortunately I haven't been able to find pieces in the documentation pointing to what those servers are, how they handle load balancing, how to deploy them, etc.
 
 The aim of this repository is to explain those involved components as I figure them out, and point to external related documentation wherever necessary.
+
+## Hands on
+There are two sets of documentations, one available on [education.ml](https://github.com/fluxcapacitor/education.ml) repository, and another one as wiki pages to the [pipeline](https://github.com/fluxcapacitor/pipeline/wiki/) repository.
+
+I started by following the instructions on `education.ml`, which resulted in a quick installation on a single machine. This machine doesn't have to be on any cloud service, but the system has requirements that are not met by usual laptops. Once you have that instance up and running, you can explore services on that machine.
+
+In my opinion, following the instructions provided on [pipeline](https://github.com/fluxcapacitor/pipeline/wiki/) itself gives better understanding of the system.

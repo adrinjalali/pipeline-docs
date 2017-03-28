@@ -40,3 +40,5 @@ There are two sets of documentations, one available on [education.ml](https://gi
 I started by following the instructions on `education.ml`, which resulted in a quick installation on a single machine. This machine doesn't have to be on any cloud service, but the system has requirements that are not met by usual laptops. Once you have that instance up and running, you can explore services on that machine.
 
 In my opinion, following the instructions provided on [pipeline](https://github.com/fluxcapacitor/pipeline/wiki/) itself gives better understanding of the system.
+
+I had a problem with setting the domain/subdomain names, which I solved as explained in [docs/kubernetes-dns.md](docs/kubernetes-dns.md).

@@ -52,3 +52,40 @@ I started with a notebook which uses `scikit-learn` on `iris` data, then saves t
     kubectl describe svc prediction-pmml
 
 [Here](https://github.com/fluxcapacitor/source.ml/blob/master/jupyterhub.ml/notebooks/scikit-learn/Deploy_Scikit_Learn_Iris_DecisionTree.ipynb) is the link to the notebook I tested. The notebook demonstrates an example of mutable model, in which you push your new model into the running server, and it replaces the model for you. There is another approach which takes model servers as immutable and with each change, it deploys new docker images, and then switches from the old ones to the new ones.
+
+You can test the service using `Apache JMeter` included in _PipelineIO_ [here](https://github.com/fluxcapacitor/pipeline/tree/master/loadtest.ml/apache-jmeter-3.0). Simply run `pipeline/loadtest.ml/apache-jmeter-3.0/bin/jmeter.sh`, then open a file such as `pipeline/loadtest.ml/tests/RecommendationServiceStressTest-AWS-airbnb.jmx`. Now you need to change some settings such as the server, path, and the body data. An example body data can be:
+
+```
+{
+	"sepal length (cm)":5.1,
+	"sepal width (cm)":3.5,
+	"petal length (cm)":1.4,
+	"petal width (cm)":0.2
+}
+```
+
+It will look similiar to this:
+
+![Apache JMeter](docs/fig/apache-jmeter-iris.png)
+
+Before running the test, you can setup `Hystrix` to monitor the traffic, and response times.
+
+Get the IP of `Hystrix` using:
+
+    kubectl describe svc hystrix
+
+Then go to `http://<hystrix ip>/hystrix-dashboard/` and add the address of your `turbine` stream, which you can find using
+
+    kubectl describe svc turbine
+
+Then you put `http://<turbine ip>/turbine.stream` into the address and add the stream. Now if you click on "Monitor Streams" you should see models you've added.
+
+![Hystrix Example](docs/fig/hystrix-load.png)
+
+You can also up-scale and down-scale the `prediction-pmml` service in your `weavescope`. Again, get the ip using:
+
+    kubectl describe svc weavescope
+
+And go to `http://<weavescope ip>`, and explore a bit there. The plus and minus buttons in this screenshot are _Scale up_ and _Scale down_ buttons.
+
+![weavescope example](docs/fig/weavescope-example.png)

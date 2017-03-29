@@ -34,11 +34,21 @@ The [script](https://github.com/fluxcapacitor/pipeline/blob/master/jupyterhub.ml
 
 The aim of this repository is to explain those involved components as I figure them out, and point to external related documentation wherever necessary.
 
-## Hands on
+## Setup
 There are two sets of documentations, one available on [education.ml](https://github.com/fluxcapacitor/education.ml) repository, and another one as wiki pages to the [pipeline](https://github.com/fluxcapacitor/pipeline/wiki/) repository.
 
 I started by following the instructions on `education.ml`, which resulted in a quick installation on a single machine. This machine doesn't have to be on any cloud service, but the system has requirements that are not met by usual laptops. Once you have that instance up and running, you can explore services on that machine.
 
 In my opinion, following the instructions provided on [pipeline](https://github.com/fluxcapacitor/pipeline/wiki/) itself gives better understanding of the system.
 
-I had a problem with setting the domain/subdomain names, which I solved as explained in [docs/kubernetes-dns.md](docs/kubernetes-dns.md).
+I had a problem with setting the domain/subdomain names, which I solved as explained in [docs/kubernetes-dns.md](docs/kubernetes-dns.md). Otherwise, at this point you should have your services running, and `kubectl get svc` in your local docker should return meaningful results, showing a list of available services.
+
+## Testing
+
+Then you can try some of the codes available [here](https://github.com/fluxcapacitor/source.ml).
+
+I started with a notebook which uses `scikit-learn` on `iris` data, then saves the model in `pmml`, and pushes the model to the `prediction-pmml` service. You can get the information about the server using
+
+    kubectl describe svc prediction-pmml
+
+[Here](https://github.com/fluxcapacitor/source.ml/blob/master/jupyterhub.ml/notebooks/scikit-learn/Deploy_Scikit_Learn_Iris_DecisionTree.ipynb) is the link to the notebook I tested. The notebook demonstrates an example of mutable model, in which you push your new model into the running server, and it replaces the model for you. There is another approach which takes model servers as immutable and with each change, it deploys new docker images, and then switches from the old ones to the new ones.

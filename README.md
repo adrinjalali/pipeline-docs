@@ -19,11 +19,11 @@ In the two videos it is shown how the system can be used, which is great. But th
 
 Another important piece of information is the architecture diagram:
 
-![Architecture](https://camo.githubusercontent.com/c3f0ef3a99da84b0346c625601770baff5ec532d/687474703a2f2f706970656c696e652e696f2f696d616765732f6172636869746563747572652d6f766572766965772d373638783536332e706e67)
+![Architecture](http://pipeline.io/img/architecture-overview-768x563.png)
 
 And as it says, mapped to code:
 
-![Architecture mapped to code](https://camo.githubusercontent.com/c5e35d8b2c088776d9ec52b360fecb45e6e43224/687474703a2f2f706970656c696e652e696f2f696d616765732f6172636869746563747572652d6f766572766965772d6d61707065642d746f2d636f64652d373638783536332e706e67)
+![Architecture mapped to code](http://pipeline.io/img/architecture-overview-mapped-to-code-768x563.png)
 
 Now I'm trying to figure out what _PipelineIO_ exactly is. I can think of the following items, some of which I guess are included in this project:
 - Scripts to create docker images for specific sub-systems, i.e. those boxes in the architecture diagram, such as Apache Spark, Apache Cassandra, Apache Flink, Kubernetes, etc.
@@ -40,6 +40,18 @@ There are two sets of documentations, one available on [education.ml](https://gi
 I started by following the instructions on `education.ml`, which resulted in a quick installation on a single machine. This machine doesn't have to be on any cloud service, but the system has requirements that are not met by usual laptops. Once you have that instance up and running, you can explore services on that machine.
 
 In my opinion, following the instructions provided on [pipeline](https://github.com/fluxcapacitor/pipeline/wiki/) itself gives better understanding of the system.
+
+### Setup Docker/Kubernetes
+The first step is to have a working kubernetes client, which is provided in a docker. To setup the docker you can follow [here](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Docker-and-Kubernetes-CLI)
+
+This pulls the docker container and starts it for you. If you happen to reboot your computer and you need to run the docker image again and don't want to remove and create the container again, you can use:
+
+    docker start kubernetes
+
+You will need to work with docker, so it's a good idea to go ahead and familiarize yourself with it before continuing the process.
+
+### Setup a kubernetes cluster on the cloud
+You can choose between [Amazon AWS](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-AWS), [Google Cloud](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-Google), or [Microsoft Azure](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-Azure). 
 
 I had a problem with setting the domain/subdomain names, which I solved as explained in [docs/kubernetes-dns.md](docs/kubernetes-dns.md). Otherwise, at this point you should have your services running, and `kubectl get svc` in your local docker should return meaningful results, showing a list of available services.
 

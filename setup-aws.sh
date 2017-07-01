@@ -16,10 +16,8 @@ apt-get install uuid jq dnsutils
 aws configure
 
 
-export KOPS_STATE_STORE=s3://pydata-1.homenet.org
-export CLUSTER_NAME=pydata-1.homenet.org
-export AWS_REGION=us-west-2c
-#export AWS_REGION=eu-central-1a
+export KOPS_STATE_STORE=s3://pydata-2.homenet.org
+export CLUSTER_NAME=pydata-2.homenet.org
 
 # You need to run this only once, to create the S3 bucket.
 aws s3 mb ${KOPS_STATE_STORE}
@@ -43,9 +41,9 @@ kops create cluster \
     --dns-zone ${CLUSTER_NAME} \
     --ssh-public-key ~/.ssh/id_rsa.pub \
     --networking flannel \
-    --master-zones ${AWS_REGION} \
+    --master-zones eu-central-1a \
     --master-size t2.medium \
-    --zones ${AWS_REGION} \
+    --zones eu-central-1a \
     --node-count 2 \
     --node-size r3.2xlarge \
     --node-tenancy dedicated \

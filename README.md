@@ -26,9 +26,9 @@ And as it says, mapped to code:
 ![Architecture mapped to code](http://pipeline.io/img/architecture-overview-mapped-to-code-768x563.png)
 
 Now I'm trying to figure out what _PipelineIO_ exactly is. I can think of the following items, some of which I guess are included in this project:
-- Scripts to create docker images for specific sub-systems, i.e. those boxes in the architecture diagram, such as Apache Spark, Apache Cassandra, Apache Flink, Kubernetes, etc.
+- Scripts to create docker images for specific sub-systems, i.e. those boxes in the architecture diagram, such as Apache Spark, Apache Cassandra, Apache Flink, etc.
 - Scripts to facilitate communication between those boxes in the diagram
-- Scripts to launch clusters with a specific purpose, such as _train_ cluster, _serve_ cluster, _storage_ cluster, etc.
+- Scripts to launch clusters/nodes with a specific purpose, such as _train_ cluster, _serve_ cluster, _storage_ cluster, etc.
 
 The [script](https://github.com/fluxcapacitor/pipeline/blob/master/jupyterhub.ml/notebooks/talks/StartupML/Jan-20-2017/SparkMLTensorflowAI-HybridCloud-ContinuousDeployment.ipynb) used in one of the talks, uses no library from _pipeline.io_ which in a sense is promising, meaning data scientist mostly won't have to worry about what they do. That script seems to deal with _pipeline.io_ when it comes to talking to some servers. But unfortunately I haven't been able to find pieces in the documentation pointing to what those servers are, how they handle load balancing, how to deploy them, etc.
 
@@ -44,16 +44,43 @@ In my opinion, following the instructions provided on [pipeline](https://github.
 ### Setup Docker/Kubernetes
 The first step is to have a working kubernetes client, which is provided in a docker. To setup the docker you can follow [here](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Docker-and-Kubernetes-CLI)
 
-This pulls the docker container and starts it for you. If you happen to reboot your computer and you need to run the docker image again and don't want to remove and create the container again, you can use:
-
-    docker start kubernetes
+``` bash
+sudo docker pull fluxcapacitor/kubernetes:v1.2.0
+#first time                                                                                                                                                                                                       
+sudo docker run -itd --name=kubernetes --privileged --net=host -v /home/USERNAME/.ssh:/root/.ssh fluxcapacitor/kubernetes:v1.2.0
+#other times                                                                                                                                                                                                      
+docker start kubernetes
+                                                                                                                                                                                                                  
+docker exec -it kubernetes bash 
+```
 
 You will need to work with docker, so it's a good idea to go ahead and familiarize yourself with it before continuing the process.
 
 ### Setup a kubernetes cluster on the cloud
-You can choose between [Amazon AWS](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-AWS), [Google Cloud](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-Google), or [Microsoft Azure](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-Azure). 
 
-I had a problem with setting the domain/subdomain names, which I solved as explained in [docs/kubernetes-dns.md](docs/kubernetes-dns.md). Otherwise, at this point you should have your services running, and `kubectl get svc` in your local docker should return meaningful results, showing a list of available services.
+``` bash
+export KOPS_STATE_STORE=s3://pydata-ready.homenet.org
+export CLUSTER_NAME=pydata-ready.homenet.org
+
+aws s3 mb ${KOPS_STATE_STORE}
+```
+
+You can choose between [Amazon AWS](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-AWS), [Google Cloud](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-Google), or [Microsoft Azure](https://github.com/fluxcapacitor/pipeline/wiki/Setup-Pipeline-Azure).
+
+__PREREQUISITE__: FQDN. You need to have an FQDN for your cluster. I didn't, so I followed [this option](https://github.com/kubernetes/kops/blob/master/docs/aws.md#scenario-3-subdomain-for-clusters-in-route53-leaving-the-domain-at-another-registrar). To run that script you need [jq](https://github.com/stedolan/jq/wiki/Installation) and `uuid`. These scripts are AWS specific.
+
+``` bash
+export ID=`uuid`
+aws route53 create-hosted-zone --name $CLUSTER_NAME --caller-reference $ID | jq .DelegationSet.NameServers
+
+# if already there:
+aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="CLUSTER NAME HERE.") | .Id'
+aws route53 get-hosted-zone --id "COPY_FROM_ABOVE" | jq .DelegationSet.NameServer
+```
+
+Then use one of them to set a free NS record for the subdomain [somewhere](http://freedns.afraid.org/subdomain/). You may need to wait some time for the NS record to propagate through global servers, and may need to stop/start your docker make sure its DNS cache is cleared.
+
+You can continue the scripts as explained in `setup-aws.sh`.
 
 ## Testing
 
